@@ -2,7 +2,13 @@
 
 namespace App\Exceptions;
 
+use App\Http\Controllers\api\v1\ApiController;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -41,8 +47,37 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
+
+
+        $this->renderable(function (NotFoundHttpException $e,$request){
+            if ($request->is('api/*')){
+                return \App\Http\Controllers\api\ApiController::error(404,"path not found");
+            }
         });
+
+        $this->renderable(function (AccessDeniedHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return \App\Http\Controllers\api\ApiController::error(403,"access denied");
+            }
+        });
+
+        $this->renderable(function (ServiceUnavailableHttpException $e, $request) {
+            if ($request->is('api/*')) {
+                return \App\Http\Controllers\api\ApiController::error(503,"server side problem");
+            }
+        });
+
+        $this->renderable(function (ValidationException $e , $request) {
+            if ($request->is('api/*')) {
+                return \App\Http\Controllers\api\ApiController::error(406,$e->errors());
+            }
+        });
+
+        $this->renderable(function (UnprocessableEntityHttpException $e , $request) {
+            if ($request->is('api/*')) {
+                return \App\Http\Controllers\api\ApiController::error(422,"database insertion failed");
+            }
+        });
+
     }
 }
