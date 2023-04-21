@@ -47,4 +47,4 @@ also you can publish bill by yourself with artisan command
 ````
 php artisan bill:publish
 ````
-
+</div>
