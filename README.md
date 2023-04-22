@@ -11,6 +11,14 @@ cp .env.example .env
 ````
 
 ````
+docker compose up --build
+````
+run below command to go to the php container
+````
+docker exec -t code-challenge-php-1 bash
+````
+then run these commands
+````
 composer install
 ````
 
@@ -25,6 +33,20 @@ php artisan migrate
 ````
 php artisan db:seed
 ````
+### or you can use make file
+
+build images and up containers
+````
+make run 
+````
+
+go to php container
+
+````
+make php 
+````
+
+
 
 ## description
 
